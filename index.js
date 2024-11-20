@@ -3,7 +3,7 @@ const { ApolloServer, gql, UserInputError } = require('apollo-server');
 // Define schema
 const typeDefs = gql`
   type Query {
-    books: [Book]
+    books(genre: String, minPrice: Float, maxPrice: Float): [Book]
     book(id: ID!): Book
     authors: [Author]
     author(id: ID!): Author
@@ -63,9 +63,15 @@ const books = [
 // Resolvers with Error Handling
 const resolvers = {
   Query: {
-    books: () => {
+    books: (_, { genre, minPrice, maxPrice }) => {
       logRequest(`books`)
-      return books
+      return books.filter((book) => {
+        let matchesGenre = genre ? book.genre === genre : true;
+        let matchesPrice =
+          (minPrice ? book.price >= minPrice : true) &&
+          (maxPrice ? book.price <= maxPrice : true);
+        return matchesGenre && matchesPrice;
+      });
     },
     book: (_, { id }) => {
       logRequest(`book`)
