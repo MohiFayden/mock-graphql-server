@@ -34,26 +34,53 @@ const typeDefs = gql`
 const authors = [
   { id: "1", name: "J.K. Rowling", bio: "Author of Harry Potter" },
   { id: "2", name: "George R.R. Martin", bio: "Author of A Song of Ice and Fire" },
+  { id: "3", name: "J.R.R. Tolkien", bio: "Author of The Lord of the Rings" },
+  { id: "4", name: "Agatha Christie", bio: "Famous mystery novelist" },
+  { id: "5", name: "Isaac Asimov", bio: "Pioneer of science fiction" },
+  { id: "6", name: "Jane Austen", bio: "Author of Pride and Prejudice" },
+  { id: "7", name: "Dan Brown", bio: "Author of The Da Vinci Code" },
+  { id: "8", name: "Haruki Murakami", bio: "Renowned Japanese novelist" },
 ];
 
 const books = [
   { id: "1", title: "Harry Potter", genre: "Fantasy", price: 29.99, authorId: "1" },
   { id: "2", title: "Game of Thrones", genre: "Fantasy", price: 39.99, authorId: "2" },
+  { id: "3", title: "The Lord of the Rings", genre: "Fantasy", price: 49.99, authorId: "3" },
+  { id: "4", title: "Murder on the Orient Express", genre: "Mystery", price: 19.99, authorId: "4" },
+  { id: "5", title: "Foundation", genre: "Science Fiction", price: 24.99, authorId: "5" },
+  { id: "6", title: "Pride and Prejudice", genre: "Romance", price: 14.99, authorId: "6" },
+  { id: "7", title: "Angels and Demons", genre: "Thriller", price: 19.99, authorId: "7" },
+  { id: "8", title: "Norwegian Wood", genre: "Literary Fiction", price: 18.99, authorId: "8" },
+  { id: "9", title: "The Hobbit", genre: "Fantasy", price: 29.99, authorId: "3" },
+  { id: "10", title: "The Da Vinci Code", genre: "Thriller", price: 22.99, authorId: "7" },
+  { id: "11", title: "A Clash of Kings", genre: "Fantasy", price: 34.99, authorId: "2" },
+  { id: "12", title: "The Casual Vacancy", genre: "Drama", price: 24.99, authorId: "1" },
+  { id: "13", title: "Emma", genre: "Romance", price: 12.99, authorId: "6" },
+  { id: "14", title: "The Silmarillion", genre: "Fantasy", price: 35.99, authorId: "3" },
+  { id: "15", title: "The Mysterious Affair at Styles", genre: "Mystery", price: 15.99, authorId: "4" },
 ];
 
 // Resolvers with Error Handling
 const resolvers = {
   Query: {
-    books: () => books,
+    books: () => {
+      logRequest(`books`)
+      return books
+    },
     book: (_, { id }) => {
+      logRequest(`book`)
       const book = books.find((book) => book.id === id);
       if (!book) {
         throw new UserInputError(`Book with ID "${id}" not found.`);
       }
       return book;
     },
-    authors: () => authors,
+    authors: () => {
+      logRequest(`authors`)
+      return authors
+    },
     author: (_, { id }) => {
+      logRequest(`author`)
       const author = authors.find((author) => author.id === id);
       if (!author) {
         throw new UserInputError(`Author with ID "${id}" not found.`);
@@ -63,6 +90,7 @@ const resolvers = {
   },
   Mutation: {
     addBook: (_, { title, authorId, genre, price }) => {
+      logUpdate(`addBook`)
       if (!authors.some((author) => author.id === authorId)) {
         throw new UserInputError(`Author with ID "${authorId}" does not exist.`);
       }
@@ -77,6 +105,7 @@ const resolvers = {
       return newBook;
     },
     addAuthor: (_, { name, bio }) => {
+      logUpdate(`addAuthor`)
       if (name.trim() === "") {
         throw new UserInputError("Author name cannot be empty.");
       }
@@ -96,6 +125,14 @@ const resolvers = {
     books: (author) => books.filter((book) => book.authorId === author.id),
   },
 };
+
+function logRequest(point){
+  console.log(`Request: ${point}`)
+}
+
+function logUpdate(point){
+  console.log(`Update: ${point}`)
+}
 
 // Create server
 const server = new ApolloServer({ 
