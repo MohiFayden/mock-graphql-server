@@ -5,6 +5,7 @@ const authors = require('../data/authors');
 const logRequest = (point) => console.log(`Request: ${point}`);
 
 const Query = {
+
   books: (_, { genre, minPrice, maxPrice }) => {
     logRequest(`books`);
     return books.filter((book) => {
@@ -15,6 +16,7 @@ const Query = {
       return matchesGenre && matchesPrice;
     });
   },
+
   book: (_, { id }) => {
     logRequest(`book`);
     const book = books.find((book) => book.id === id);
@@ -23,10 +25,12 @@ const Query = {
     }
     return book;
   },
+
   authors: () => {
     logRequest(`authors`);
     return authors;
   },
+  
   author: (_, { id }) => {
     logRequest(`author`);
     const author = authors.find((author) => author.id === id);
