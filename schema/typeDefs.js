@@ -1,11 +1,15 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
+  
+  union SearchResult = Book | Author
+
   type Query {
     books(genre: String, minPrice: Float, maxPrice: Float): [Book]
     book(id: ID!): Book
     authors: [Author]
     author(id: ID!): Author
+    search(keyword: String!): [SearchResult]
   }
 
   type Mutation {

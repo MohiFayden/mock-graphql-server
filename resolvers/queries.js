@@ -30,7 +30,7 @@ const Query = {
     logRequest(`authors`);
     return authors;
   },
-  
+
   author: (_, { id }) => {
     logRequest(`author`);
     const author = authors.find((author) => author.id === id);
@@ -38,6 +38,16 @@ const Query = {
       throw new UserInputError(`Author with ID "${id}" not found.`);
     }
     return author;
+  },
+
+  search: (_, { keyword }) => {
+    const bookResults = books.filter((book) =>
+      book.title.toLowerCase().includes(keyword.toLowerCase())
+    );
+    const authorResults = authors.filter((author) =>
+      author.name.toLowerCase().includes(keyword.toLowerCase())
+    );
+    return [...bookResults, ...authorResults];
   },
 };
 
